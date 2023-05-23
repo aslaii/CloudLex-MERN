@@ -6,7 +6,7 @@ const {getTest} = require('../controllers/test');
 //import middlewares
 
 //api routers
-router.GET('/test',getTest);
+router.get("/test",getTest);
 
 
 module.exports = router;

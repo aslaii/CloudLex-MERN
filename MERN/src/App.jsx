@@ -1,13 +1,19 @@
+import { useState, useEffect } from "react";
+import { getTest } from "./functions/test";
 
-import './App.css'
+function App (){
+    const[data, setData] = useState("World Hello");
+    useEffect(() => {
+        getTest().then((res) => {
+          setData(res.message);
+        }).catch((err) => console.log(err));
+    },[]);
 
-function App() {
-
-  return (
-    <>
-      <h1>Hello World</h1>
-    </>
-  )
+    return (
+        <>
+        <h1>{data}</h1>
+        </>
+    );
 }
 
-export default App
+import (useState)
