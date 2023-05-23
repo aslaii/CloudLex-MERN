@@ -19,6 +19,8 @@ mongoose.connect(process.env.MONGO_URI, {
 app.use(morgan("dev"));
 app.use(cors({ origin:true, credentials:true}));
 //routes
+const testRoutes = require('./routes/test');
+app.use("/",testRoutes);
 
 
 // port
