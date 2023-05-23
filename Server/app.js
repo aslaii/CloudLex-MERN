@@ -3,11 +3,12 @@ const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const cors = require('cors');
-
+const dotenv = require('dotenv');
 
 //app
 const app = express();
 //db
+dotenv.config();
 mongoose.connect(process.env.MONGO_URI, {
     UseNewUrlParser: true,
     useUnifiedTopology: true
