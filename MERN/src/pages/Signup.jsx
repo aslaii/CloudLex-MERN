@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-
+import PasswordChecklist from "react-password-checklist";
 //design
 import {
   InputAdornment,
@@ -18,8 +18,6 @@ import {
 import TextField from "@mui/material/TextField";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import LockIcon from "@mui/icons-material/Lock";
-import InputIcon from "@mui/icons-material/Input";
 import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 
 const Signup = () => {
@@ -35,9 +33,19 @@ const Signup = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
   };
+
+  const handleChangePassword = (e) => {
+    const newPassword = e.target.value;
+    setpassword(newPassword);
+
+    if (!newPassword) {
+      setConfirmPassword("");
+      showPassword = false;
+    }
+  };
   const avatarStyle = { backgroundColor: "#1bbd7e" };
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="sm" className="">
       <Box
         sx={{
           marginTop: 8,
@@ -84,9 +92,9 @@ const Signup = () => {
               fullWidth
               required
               label="Password"
-              type={!showPassword ? "text" : "password"}
+              type={showPassword ? "text" : "password"}
               value={password}
-              onChange={(e) => setpassword(e.target.value)}
+              onChange={handleChangePassword}
               endAdornment={
                 <InputAdornment position="end">
                   <IconButton
@@ -94,7 +102,7 @@ const Signup = () => {
                     onClick={handleClickShowPassword}
                     onMouseDown={handleMouseDownPassword}
                   >
-                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                    {!showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
                   </IconButton>
                 </InputAdornment>
               }
@@ -107,19 +115,19 @@ const Signup = () => {
               fullWidth
               required
               label="Confirm Password"
-              type={!showPassword ? "text" : "password"}
+              type={showPassword ? "text" : "password"}
               disabled={!password}
               value={ConfirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             ></OutlinedInput>
           </FormControl>
-          <FormHelperText>
-            {password === ConfirmPassword ? (
-              <span className="text-success">Password does match!</span>
-            ) : (
-              <span className="text-danger">Password does not match!</span>
-            )}
-          </FormHelperText>
+          <PasswordChecklist
+            rules={["minLength", "specialChar", "number", "capital", "match"]}
+            minLength={5}
+            value={password}
+            valueAgain={ConfirmPassword}
+            onChange={(isValid) => {}}
+          />
           {/* Button */}
           <Button
             type="submit"
@@ -128,7 +136,7 @@ const Signup = () => {
             sx={{ mt: 3, mb: 2 }}
             disabled={!email || !password || !Username || !ConfirmPassword}
           >
-            Login
+            Sign Up
           </Button>
         </Box>
       </Box>
