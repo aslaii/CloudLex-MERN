@@ -37,10 +37,8 @@ const Signup = () => {
   const handleChangePassword = (e) => {
     const newPassword = e.target.value;
     setpassword(newPassword);
-
     if (!newPassword) {
       setConfirmPassword("");
-      showPassword = false;
     }
   };
   const avatarStyle = { backgroundColor: "#1bbd7e" };

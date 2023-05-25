@@ -1,32 +1,37 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const morgan = require('morgan');
-const cors = require('cors');
-require('dotenv').config();
+const express = require("express");
+const { json, urlencoded } = express;
+const mongoose = require("mongoose");
+const morgan = require("morgan");
+const cors = require("cors");
+require("dotenv").config();
+const cookieParser = require("cookie-parser");
+const expressValidator = require("express-validator");
 
 const app = express();
 
 // Middlewares
-app.use(morgan('dev'));
+app.use(morgan("dev"));
 app.use(cors());
+app.use(json());
+app.use(urlencoded({ extended: false }));
+app.use(cookieParser());
 
 // Routes
-const testRoutes = require('./routes/test');
-app.use('/', testRoutes);
-app.get('/', (req, res) => {
-    res.send('Server is up and running');
-  });
-  
 
+const userRoutes = require("./routes/user");
+app.use("/", userRoutes);
 // Database connection
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(() => {
-  console.log('DB Connected');
-}).catch((err) => {
-  console.log('DB Connection Error:', err);
-});
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("DB Connected");
+  })
+  .catch((err) => {
+    console.log("DB Connection Error:", err);
+  });
 
 // Port
 const port = process.env.PORT || 4000;
