@@ -19,8 +19,12 @@ import TextField from "@mui/material/TextField";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ErrorIcon from "@mui/icons-material/Error";
 
 const Signup = () => {
+  const [usernameValid, setUsernameValid] = useState(null);
+  const [emailValid, setEmailValid] = useState(null);
   const [Username, setUsername] = useState("");
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
@@ -71,7 +75,21 @@ const Signup = () => {
             label="Username"
             autoComplete="Username"
             value={Username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => {
+              setUsername(e.target.value);
+              checkUsernameAvailability(e.target.value);
+            }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  {usernameValid === null ? null : usernameValid ? (
+                    <CheckCircleIcon />
+                  ) : (
+                    <ErrorIcon />
+                  )}
+                </InputAdornment>
+              ),
+            }}
           />
           {/* Email Form */}
           <TextField
@@ -81,7 +99,21 @@ const Signup = () => {
             label="Email Address"
             autoComplete="email"
             value={email}
-            onChange={(e) => setemail(e.target.value)}
+            onChange={(e) => {
+              setemail(e.target.value);
+              checkEmailAvailability(e.target.value);
+            }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  {emailValid === null ? null : emailValid ? (
+                    <CheckCircleIcon />
+                  ) : (
+                    <ErrorIcon />
+                  )}
+                </InputAdornment>
+              ),
+            }}
           />
           {/* Password Form */}
           <FormControl fullWidth margin="normal" required>
