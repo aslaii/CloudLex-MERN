@@ -1,54 +1,53 @@
-const { check, validationResult } = require("express-validator");
+const User = require("../models/user");
 
-exports.userRegisterValidator = [
-  // username must not be empty
-  check("username").notEmpty().withMessage("Username is required"),
+exports.userRegisterValidator = (req, res, next) => {
+  // username is not null
+  req.check("username", "Username is required").notEmpty();
 
-  // email must be valid and not empty
-  check("email")
-    .notEmpty()
-    .withMessage("Email is required")
-    .isEmail()
-    .withMessage("Invalid Email"),
+  // email is not null, valid, and normalized
+  req.check("email", "Email is required").notEmpty();
+  req.check("email", "Invalid Email").isEmail();
 
-  // password checks
-  check("password")
-    .isLength({ min: 5 })
-    .withMessage("Password must be at least 5 chars long")
-    .matches(/\d/)
-    .withMessage("Password must contain a number")
-    .matches(/[A-Z]/)
-    .withMessage("Password must contain an uppercase letter")
-    .matches(/[^a-zA-Z0-9]/)
-    .withMessage("Password must contain a special character"),
+  // check password
+  req.check("password", "Password is required").notEmpty();
+  req
+    .check("password")
+    .isLength({ min: 6 })
+    .withMessage("Password must contain at least 6 character");
 
-  (req, res, next) => {
-    // Finds the validation errors in this request and wraps them in an object with handy functions
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+  req
+    .check(
+      "password",
+      "Password must contain one uppercase, one lowercase, one number, and one special symbol"
+    )
+    .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{6,}$/, "i");
+
+  // check for errors
+  const errors = req.validationErrors();
+  // if error, show the first one as it happens
+  if (errors) {
+    const firstError = errors.map((err) => err.msg)[0];
+
+    return res.status(400).json({
+      error: firstError,
+    });
+  }
+
+  // process to next middleware
+  next();
+};
+
+exports.userById = async (req, res, next) => {
+  User.findById(req._id).exec((err, user) => {
+    if (err || !user) {
+      return res.status(404).json({
+        error: "User not found",
+      });
     }
+
+    // add user object in req with all user info
+    req.user = user;
+
     next();
-  },
-];
-
-exports.userLoginValidator = [
-  // email must be valid and not empty
-  check("email")
-    .notEmpty()
-    .withMessage("Email is required")
-    .isEmail()
-    .withMessage("Invalid Email"),
-
-  // password checks
-  check("password").notEmpty().withMessage("Password is required"),
-
-  (req, res, next) => {
-    // Finds the validation errors in this request and wraps them in an object with handy functions
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    next();
-  },
-];
+  });
+};
