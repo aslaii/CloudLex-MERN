@@ -46,6 +46,42 @@ const Signup = () => {
     }
   };
   const avatarStyle = { backgroundColor: "#1bbd7e" };
+  const checkUsernameAvailability = async (username) => {
+    try {
+      const response = await fetch("/register/checkUsername", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username }),
+      });
+      const data = await response.json();
+
+      setUsernameValid(!data.exists);
+    } catch (error) {
+      console.error("Error checking username availability:", error);
+      setUsernameValid(null);
+    }
+  };
+
+  const checkEmailAvailability = async (email) => {
+    try {
+      const response = await fetch("/register/checkEmail", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json();
+
+      setEmailValid(!data.exists);
+    } catch (error) {
+      console.error("Error checking email availability:", error);
+      setEmailValid(null);
+    }
+  };
+
   return (
     <Container maxWidth="sm" className="">
       <Box

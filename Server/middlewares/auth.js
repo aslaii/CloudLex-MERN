@@ -1,40 +1,27 @@
 const jwt = require("jsonwebtoken");
-const mongoose = require("mongoose");
-const User = require("../models/user"); // Replace this with your user model file path
 
-const auth = async (req, res, next) => {
+exports.verifyToken = (req, res, next) => {
+  let accessToken = req.cookies.jwt;
+
+  // if there is no token in the cookies, request is unauthorized
+  if (!accessToken) {
+    return res.status(403).json({
+      error: "Unauthorized",
+    });
+  }
+
+  let payload;
   try {
-    // Check if the JWT token exists
-    if (!req.cookies.jwt) {
-      return res
-        .status(401)
-        .json({ error: "You must be logged in to access this route" });
-    }
+    // verify the token jwt.verify
+    // throws an erro if token has expired or has an invalid signature
+    payload = jwt.verify(accessToken, process.env.JWT_SECRET);
+    req._id = payload._id;
 
-    // Verify the JWT token
-    const decodedToken = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
-
-    // Check if user exists
-    const user = await User.findById(decodedToken._id);
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    // Add user to request object
-    req.user = user;
-
-    // Check if there's a user in the session
-    if (req.user) {
-      // If user is logged in, send a response immediately
-      return res.status(400).json({ error: "You are already logged in." });
-    }
-
-    // Call next middleware
     next();
-  } catch (err) {
-    return res
-      .status(500)
-      .json({ error: "Error verifying token: " + err.message });
+  } catch (e) {
+    // return req unauthorized error
+    return res.status(403).json({
+      error: "Unauthorized",
+    });
   }
 };
-module.exports = auth;

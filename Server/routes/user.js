@@ -1,21 +1,26 @@
 const express = require("express");
 const router = express.Router();
-const { login, register, logout } = require("../controllers/user");
-const { userRegisterValidator } = require("../middlewares/user");
-const { userLoginValidator } = require("../middlewares/user");
 
-const auth = require("../middlewares/auth"); // Replace this with your auth middleware file path
+// import controllers
+const {
+  register,
+  login,
+  logout,
+  getLoggedInUser,
+} = require("../controllers/user");
 
-router.get("/protectedRoute", auth, (req, res) => {
-  // Your route handler code here
-});
+// import middlewares
+const { userRegisterValidator, userById } = require("../middlewares/user");
+const { verifyToken } = require("../middlewares/auth");
 
-console.log("Register:", register);
-console.log("Login:", login);
-console.log("Logout:", logout);
-
-router.post("/login", userLoginValidator, login);
+// api routes
 router.post("/register", userRegisterValidator, register);
+console.log("test");
+router.post("/login", login);
+console.log("test2");
 router.get("/logout", logout);
+console.log("test3");
+router.get("/user", verifyToken, userById, getLoggedInUser);
+console.log("test");
 
 module.exports = router;
