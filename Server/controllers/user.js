@@ -32,12 +32,14 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  // find the user based on email
-  const { email, password } = req.body;
+  try {
+    // find the user based on email
+    const { email, password } = req.body;
 
-  await User.findOne({ email }).exec((err, user) => {
+    const user = await User.findOne({ email });
+
     // if err or no user
-    if (err || !user) {
+    if (!user) {
       return res.status(401).json({
         error: "Invalid Credentials",
       });
@@ -64,7 +66,12 @@ exports.login = async (req, res) => {
       message: "Login Successful!",
       username,
     });
-  });
+  } catch (err) {
+    // Handle any errors that occur during the execution
+    return res.status(500).json({
+      error: "Internal Server Error",
+    });
+  }
 };
 
 exports.logout = (req, res) => {

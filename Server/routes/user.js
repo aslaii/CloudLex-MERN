@@ -10,11 +10,11 @@ const {
 } = require("../controllers/user");
 
 // import middlewares
-const { userRegisterValidator, userById } = require("../middlewares/user");
+const { validateUserRegistration, userById } = require("../middlewares/user");
 const { verifyToken } = require("../middlewares/auth");
 
 // api routes
-router.post("/register", userRegisterValidator, register);
+router.post("/register", validateUserRegistration, register);
 router.post("/login", login);
 router.get("/logout", logout);
 router.get("/user", verifyToken, userById, getLoggedInUser);

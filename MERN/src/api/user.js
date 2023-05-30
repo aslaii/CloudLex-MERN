@@ -1,7 +1,7 @@
+const baseURL = import.meta.env.VITE_REACT_APP_CLIENT_API_URL;
+
 export const register = async ({ username, email, password } = {}) => {
   const user = { username, email, password };
-  const baseURL = import.meta.env.VITE_REACT_APP_CLIENT_API_URL;
-
   try {
     const res = await fetch(`${baseURL}register`, {
       method: "POST",
@@ -20,7 +20,6 @@ export const register = async ({ username, email, password } = {}) => {
 
 export const login = async ({ email, password } = {}) => {
   const user = { email, password };
-
   try {
     const res = await fetch(`${baseURL}login`, {
       method: "POST",
@@ -31,7 +30,6 @@ export const login = async ({ email, password } = {}) => {
       },
       body: JSON.stringify(user),
     });
-
     return await res.json();
   } catch (err) {
     throw new Error(`Cannot login at this time. ${err}`);

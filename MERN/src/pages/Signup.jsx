@@ -58,9 +58,7 @@ const Signup = () => {
     e.preventDefault();
 
     try {
-      console.log("test");
       const res = await register({ username, email, password });
-      console.log("test1");
       if (res.error) toast.error(res.error);
       else {
         toast.success(res.message);
@@ -176,14 +174,6 @@ const Signup = () => {
             loading={loading}
             loadingIndicator="Loading…"
             onClick={async (e) => {
-              console.log(
-                "I am clicked",
-                username,
-                password,
-                email,
-                ConfirmPassword,
-                loading
-              );
               await handleRegister(e);
             }}
           >
@@ -193,7 +183,7 @@ const Signup = () => {
       </Box>
     </Container>
   ) : (
-    <Redirect to="/" />
+    <Navigate to="/" />
   );
 };
 
