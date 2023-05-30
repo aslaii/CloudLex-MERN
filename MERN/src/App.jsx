@@ -20,7 +20,7 @@ function App() {
   useEffect(() => {
     const unsubscribe = getUser()
       .then((res) => {
-        if (res.error) toast(res.error);
+        if (res.error) console.log(res.error);
         else setUser(res.username);
       })
       .catch((err) => toast(err));
