@@ -1,6 +1,9 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import PasswordChecklist from "react-password-checklist";
+import { useNavigate, Navigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
 //design
 import {
   InputAdornment,
@@ -13,19 +16,21 @@ import {
   Container,
   Grid,
   Avatar,
-  FormHelperText,
 } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import ErrorIcon from "@mui/icons-material/Error";
+import LoadingButton from "@mui/lab/LoadingButton";
+
+import { register } from "../api/user";
+import { UserContext } from "../UserContext";
 
 const Signup = () => {
-  const [usernameValid, setUsernameValid] = useState(null);
-  const [emailValid, setEmailValid] = useState(null);
-  const [Username, setUsername] = useState("");
+  const navigate = useNavigate();
+  const { user } = useContext(UserContext);
+  const [loading, setLoading] = useState(false);
+  const [username, setusername] = useState("");
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
   const [ConfirmPassword, setConfirmPassword] = useState("");
@@ -34,6 +39,7 @@ const Signup = () => {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
   };
@@ -46,43 +52,31 @@ const Signup = () => {
     }
   };
   const avatarStyle = { backgroundColor: "#1bbd7e" };
-  const checkUsernameAvailability = async (username) => {
-    try {
-      const response = await fetch("/register/checkUsername", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username }),
-      });
-      const data = await response.json();
 
-      setUsernameValid(!data.exists);
-    } catch (error) {
-      console.error("Error checking username availability:", error);
-      setUsernameValid(null);
+  const handleRegister = async (e) => {
+    setLoading(true);
+    e.preventDefault();
+
+    try {
+      console.log("test");
+      const res = await register({ username, email, password });
+      console.log("test1");
+      if (res.error) toast.error(res.error);
+      else {
+        toast.success(res.message);
+        // redirect the user to login
+        navigate("/login");
+      }
+    } catch (err) {
+      toast.error(err);
+    } finally {
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000); // 2000 ms delay
     }
   };
 
-  const checkEmailAvailability = async (email) => {
-    try {
-      const response = await fetch("/register/checkEmail", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
-      const data = await response.json();
-
-      setEmailValid(!data.exists);
-    } catch (error) {
-      console.error("Error checking email availability:", error);
-      setEmailValid(null);
-    }
-  };
-
-  return (
+  return !user ? (
     <Container maxWidth="sm" className="">
       <Box
         sx={{
@@ -108,23 +102,11 @@ const Signup = () => {
             required
             margin="normal"
             fullWidth
-            label="Username"
-            autoComplete="Username"
-            value={Username}
+            label="username"
+            autoComplete="username"
+            value={username}
             onChange={(e) => {
-              setUsername(e.target.value);
-              checkUsernameAvailability(e.target.value);
-            }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  {usernameValid === null ? null : usernameValid ? (
-                    <CheckCircleIcon />
-                  ) : (
-                    <ErrorIcon />
-                  )}
-                </InputAdornment>
-              ),
+              setusername(e.target.value);
             }}
           />
           {/* Email Form */}
@@ -137,18 +119,6 @@ const Signup = () => {
             value={email}
             onChange={(e) => {
               setemail(e.target.value);
-              checkEmailAvailability(e.target.value);
-            }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  {emailValid === null ? null : emailValid ? (
-                    <CheckCircleIcon />
-                  ) : (
-                    <ErrorIcon />
-                  )}
-                </InputAdornment>
-              ),
             }}
           />
           {/* Password Form */}
@@ -195,18 +165,35 @@ const Signup = () => {
             onChange={(isValid) => {}}
           />
           {/* Button */}
-          <Button
+          <LoadingButton
             type="submit"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
-            disabled={!email || !password || !Username || !ConfirmPassword}
+            disabled={
+              !email || !password || !username || !ConfirmPassword || loading
+            }
+            loading={loading}
+            loadingIndicator="Loading…"
+            onClick={async (e) => {
+              console.log(
+                "I am clicked",
+                username,
+                password,
+                email,
+                ConfirmPassword,
+                loading
+              );
+              await handleRegister(e);
+            }}
           >
             Sign Up
-          </Button>
+          </LoadingButton>
         </Box>
       </Box>
     </Container>
+  ) : (
+    <Redirect to="/" />
   );
 };
 
