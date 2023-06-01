@@ -1,5 +1,8 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { toast } from "react-toastify";
+import { useNavigate, Navigate } from "react-router-dom";
+import { UserContext } from "../UserContext";
 
 //design
 import {
@@ -8,11 +11,8 @@ import {
   OutlinedInput,
   FormControl,
   InputLabel,
-  Button,
-  Input,
   Box,
   Container,
-  Typography,
   Grid,
   Avatar,
 } from "@mui/material";
@@ -20,8 +20,14 @@ import TextField from "@mui/material/TextField";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import LockIcon from "@mui/icons-material/Lock";
+import LoadingButton from "@mui/lab/LoadingButton";
+
+import { login } from "../api/user";
 
 const Login = () => {
+  const { user } = useContext(UserContext);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -33,7 +39,29 @@ const Login = () => {
     e.preventDefault();
   };
   const avatarStyle = { backgroundColor: "#1bbd7e" };
-  return (
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await login({ email, password });
+      if (res.error) toast.error(res.error);
+      else {
+        toast.success(res.message);
+        setUser(res.username);
+        // redirect the user to home
+        navigate("/");
+      }
+    } catch (err) {
+      toast.error(err);
+    } finally {
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000); // 2000 ms delay
+    }
+  };
+
+  return !user ? (
     <Container maxWidth="sm">
       <Box
         sx={{
@@ -88,18 +116,26 @@ const Login = () => {
             ></OutlinedInput>
           </FormControl>
           {/* Button */}
-          <Button
+          <LoadingButton
             type="submit"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
-            disabled={!email || !password}
+            disabled={!password || !email || loading}
+            loading={loading}
+            loadingIndicator="Loading…"
+            onClick={async (e) => {
+              console.log("clicked");
+              await handleLogin(e);
+            }}
           >
             Login
-          </Button>
+          </LoadingButton>
         </Box>
       </Box>
     </Container>
+  ) : (
+    <Navigate to="/" />
   );
 };
 

@@ -1,33 +1,35 @@
+const baseURL = import.meta.env.VITE_REACT_APP_CLIENT_API_URL;
+
 export const register = async ({ username, email, password } = {}) => {
   const user = { username, email, password };
   try {
-    const res = await fetch(
-      `${process.eventNames.REACT_APP_API_URL}/register`,
-      {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const res = await fetch(`${baseURL}register`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(user),
+    });
+
     return await res.json();
   } catch (err) {
     throw new Error(`Cannot register at this time. ${err}`);
   }
 };
+
 export const login = async ({ email, password } = {}) => {
   const user = { email, password };
   try {
-    const res = await fetch(`${process.eventNames.REACT_APP_API_URL}/login`, {
+    const res = await fetch(`${baseURL}login`, {
       method: "POST",
       credentials: "include",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      body: JSON.stringify(user),
     });
-
     return await res.json();
   } catch (err) {
     throw new Error(`Cannot login at this time. ${err}`);
@@ -36,7 +38,7 @@ export const login = async ({ email, password } = {}) => {
 
 export const logout = async () => {
   try {
-    const res = await fetch(`${process.env.REACT_APP_API_URL}/logout`, {
+    const res = await fetch(`${baseURL}logout`, {
       method: "GET",
       credentials: "include",
     });
@@ -48,12 +50,12 @@ export const logout = async () => {
 
 export const getUser = async () => {
   try {
-    const res = await fetch(`${process.env.REACT_APP_API_URL}/logout`, {
+    const res = await fetch(`${baseURL}user`, {
       method: "GET",
       credentials: "include",
     });
     return await res.json();
   } catch (err) {
-    console.log(err);
+    throw new Error("Please login to continue");
   }
 };
