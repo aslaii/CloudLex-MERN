@@ -32,6 +32,7 @@ const Login = () => {
   const [password, setpassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
+
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
@@ -42,21 +43,24 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+    setLoading(true);
     try {
       const res = await login({ email, password });
       if (res.error) toast.error(res.error);
       else {
         toast.success(res.message);
-        setUser(res.username);
+        user(res.username);
         // redirect the user to home
-        navigate("/");
       }
+      q;
     } catch (err) {
       toast.error(err);
     } finally {
       setTimeout(() => {
         setLoading(false);
+        navigate("/");
+        window.location.reload(false);
+        <Navigate to={"/"} />;
       }, 2000); // 2000 ms delay
     }
   };
@@ -125,7 +129,6 @@ const Login = () => {
             loading={loading}
             loadingIndicator="Loading…"
             onClick={async (e) => {
-              console.log("clicked");
               await handleLogin(e);
             }}
           >

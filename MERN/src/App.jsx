@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 
 import { UserContext } from "./UserContext";
 
@@ -38,6 +39,7 @@ function App() {
             <Route exact path="/" element={<Home />} />
             <Route exact path="/signup" element={<Signup />} />
             <Route exact path="/login" element={<Login />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </>
       </UserContext.Provider>
