@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { Navigate } from "react-router-dom";
 import { UserContext } from "../UserContext";
+import { toast } from "react-toastify";
 
 const Home = () => {
   const { user } = useContext(UserContext);
@@ -13,7 +14,9 @@ const Home = () => {
       </div> */}
     </>
   ) : (
-    <Navigate to={"/login"} />
+    <div>
+      <Navigate to={"/login"} />
+    </div>
   );
 };
 

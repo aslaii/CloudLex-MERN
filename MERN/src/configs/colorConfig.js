@@ -12,6 +12,9 @@ const colorConfigs = {
     color: "#000",
   },
   mainBg: colors.grey["100"],
+  headerButton: {
+    color: "ffffff",
+  },
 };
 
 export default colorConfigs;

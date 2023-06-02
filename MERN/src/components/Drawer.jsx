@@ -1,9 +1,8 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
-import Button from "@mui/material/Button";
 import List from "@mui/material/List";
-import Divider from "@mui/material/Divider";
+import AccountCircle from "@mui/icons-material/AccountCircle";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -20,7 +19,7 @@ export default function TemporaryDrawer({ state, setState, toggleDrawer }) {
       onKeyDown={toggleDrawer(anchor, false)}
     >
       <List>
-        {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
+        {["Dashboard", "Analytics", "Reports", "Mail"].map((text, index) => (
           <ListItem key={text} disablePadding>
             <ListItemButton>
               <ListItemIcon>
@@ -31,7 +30,8 @@ export default function TemporaryDrawer({ state, setState, toggleDrawer }) {
           </ListItem>
         ))}
       </List>
-      <Divider />
+
+      {/* <Divider />
       <List>
         {["All mail", "Trash", "Spam"].map((text, index) => (
           <ListItem key={text} disablePadding>
@@ -43,7 +43,7 @@ export default function TemporaryDrawer({ state, setState, toggleDrawer }) {
             </ListItemButton>
           </ListItem>
         ))}
-      </List>
+      </List> */}
     </Box>
   );
 

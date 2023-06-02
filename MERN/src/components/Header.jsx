@@ -7,6 +7,7 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import { logout } from "../api/user";
 import TemporaryDrawer from "./Drawer";
+import FilterDramaIcon from "@mui/icons-material/FilterDrama";
 
 const Header = () => {
   const { user, setUser } = useContext(UserContext);
@@ -62,12 +63,12 @@ const Header = () => {
         <IconButton
           size="large"
           edge="start"
-          color="inherit"
-          aria-label="filterdrama"
+          color="primary"
+          aria-label="cloudlex icon"
           sx={{ mr: 3, ml: 2 }}
-          onClick={toggleDrawer("left", true)}
+          // onClick={navigate("/")}
         >
-          <MenuIcon />
+          <FilterDramaIcon />
         </IconButton>
       )}
       {/* <IconButton

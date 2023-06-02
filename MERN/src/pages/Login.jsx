@@ -138,7 +138,10 @@ const Login = () => {
       </Box>
     </Container>
   ) : (
-    <Navigate to="/" />
+    <div>
+      <Navigate to="/" />
+      {/* {toast.error("Unauthorized!")} */}
+    </div>
   );
 };
 
