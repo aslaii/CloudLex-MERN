@@ -3,8 +3,10 @@ import { Link } from "react-router-dom";
 import { useNavigate, Navigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { UserContext } from "../UserContext";
-
+import IconButton from "@mui/material/IconButton";
+import MenuIcon from "@mui/icons-material/Menu";
 import { logout } from "../api/user";
+import TemporaryDrawer from "./Drawer";
 
 const Header = () => {
   const { user, setUser } = useContext(UserContext);
@@ -23,12 +25,61 @@ const Header = () => {
       })
       .catch((err) => console.error(err));
   };
+  const toggleDrawer = (anchor, open) => (event) => {
+    if (
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
+      return;
+    }
 
+    setState({ ...state, [anchor]: open });
+  };
+  const [state, setState] = React.useState({
+    top: false,
+    left: false,
+    bottom: false,
+    right: false,
+  });
   return (
     <nav
       className="navbar navbar-expand-lg bg-body-tertiary ml-auto"
       data-bs-theme="dark"
     >
+      {user ? (
+        <IconButton
+          size="large"
+          edge="start"
+          color="primary"
+          // color={colorConfigs.headerButton.color}
+          aria-label="menu"
+          sx={{ mr: 3, ml: 2 }}
+          onClick={toggleDrawer("left", true)}
+        >
+          <MenuIcon />
+        </IconButton>
+      ) : (
+        <IconButton
+          size="large"
+          edge="start"
+          color="inherit"
+          aria-label="filterdrama"
+          sx={{ mr: 3, ml: 2 }}
+          onClick={toggleDrawer("left", true)}
+        >
+          <MenuIcon />
+        </IconButton>
+      )}
+      {/* <IconButton
+        size="large"
+        edge="start"
+        color="inherit"
+        aria-label="menu"
+        sx={{ mr: 3, ml: 2 }}
+        onClick={toggleDrawer("left", true)}
+      >
+        <MenuIcon />
+      </IconButton> */}
       <Link className="navbar-brand" to="/">
         CloudLex
       </Link>
@@ -71,6 +122,11 @@ const Header = () => {
           )}
         </ul>
       </div>
+      <TemporaryDrawer
+        state={state}
+        setState={setState}
+        toggleDrawer={toggleDrawer}
+      ></TemporaryDrawer>
     </nav>
   );
 };

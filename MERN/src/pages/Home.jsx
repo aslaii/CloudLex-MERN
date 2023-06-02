@@ -1,7 +1,6 @@
 import React, { useContext } from "react";
 import { Navigate } from "react-router-dom";
 import { UserContext } from "../UserContext";
-import Sidebar from "../components/Sidebar";
 
 const Home = () => {
   const { user } = useContext(UserContext);
@@ -12,7 +11,6 @@ const Home = () => {
           <h1>{user && <span className="text-success">{user}'s</span>} Home</h1>
         </div>
       </div> */}
-      <Sidebar></Sidebar>
     </>
   ) : (
     <Navigate to={"/login"} />
