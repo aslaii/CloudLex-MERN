@@ -12,7 +12,7 @@ import Home from "./pages/Home";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Header from "./components/Header";
-
+import Appdrawer from "./components/Appdrawer.jsx";
 import { getUser } from "./api/user";
 
 function App() {
@@ -34,6 +34,7 @@ function App() {
       <UserContext.Provider value={{ user, setUser }}>
         <>
           <ToastContainer />
+    <Appdrawer />
           <Routes>
             <Route exact path="/" element={<Home />} />
             <Route exact path="/signup" element={<Signup />} />
