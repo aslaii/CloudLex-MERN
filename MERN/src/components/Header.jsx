@@ -6,7 +6,6 @@ import { UserContext } from "../UserContext";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import { logout } from "../api/user";
-import TemporaryDrawer from "./Drawer";
 import FilterDramaIcon from "@mui/icons-material/FilterDrama";
 
 const Header = () => {

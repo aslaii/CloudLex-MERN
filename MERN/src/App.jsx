@@ -34,7 +34,6 @@ function App() {
       <UserContext.Provider value={{ user, setUser }}>
         <>
           <ToastContainer />
-          <Header></Header>
           <Routes>
             <Route exact path="/" element={<Home />} />
             <Route exact path="/signup" element={<Signup />} />
