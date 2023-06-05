@@ -21,7 +21,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 import LoadingButton from "@mui/lab/LoadingButton";
-
+import Link from "@mui/material/Link";
 import { register } from "../api/user";
 import { UserContext } from "../UserContext";
 
@@ -99,7 +99,7 @@ const Signup = () => {
             required
             margin="normal"
             fullWidth
-            label="username"
+            label="Username"
             autoComplete="username"
             value={username}
             onChange={(e) => {
@@ -178,6 +178,7 @@ const Signup = () => {
           >
             Sign Up
           </LoadingButton>
+          <Link href="/login">Have an Account?</Link>
         </Box>
       </Box>
     </Container>

@@ -21,6 +21,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import LockIcon from "@mui/icons-material/Lock";
 import LoadingButton from "@mui/lab/LoadingButton";
+import Link from "@mui/material/Link";
 
 import { login } from "../api/user";
 
@@ -134,6 +135,7 @@ const Login = () => {
           >
             Login
           </LoadingButton>
+          <Link href="/signup">Need Account?</Link>
         </Box>
       </Box>
     </Container>

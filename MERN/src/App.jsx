@@ -7,12 +7,17 @@ import { UserContext } from "./UserContext";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// Components
+// Pages
 import Home from "./pages/Home";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
+import Analytics from "./pages/Analytics";
+import Dashboard from "./pages/Dashboard";
+
+//Components
 import Header from "./components/Header";
 import Appdrawer from "./components/Appdrawer.jsx";
+
 import { getUser } from "./api/user";
 
 function App() {
@@ -34,11 +39,13 @@ function App() {
       <UserContext.Provider value={{ user, setUser }}>
         <>
           <ToastContainer />
-    <Appdrawer />
+          <Appdrawer />
           <Routes>
             <Route exact path="/" element={<Home />} />
             <Route exact path="/signup" element={<Signup />} />
             <Route exact path="/login" element={<Login />} />
+            <Route exact path="/analytics" element={<Analytics />} />
+            <Route exact path="/dashboard" element={<Dashboard />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </>
