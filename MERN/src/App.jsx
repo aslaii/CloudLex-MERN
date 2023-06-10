@@ -15,7 +15,7 @@ import Analytics from "./pages/Analytics";
 import Dashboard from "./pages/Dashboard";
 import Inventory from "./pages/Inventory";
 //Components
-import Header from "./components/Header";
+// import Header from "./components/Header";
 import Appdrawer from "./components/Appdrawer.jsx";
 
 import { getUser } from "./api/user";
@@ -44,7 +44,6 @@ function App() {
             <Route exact path="/" element={<Home />} />
             <Route exact path="/signup" element={<Signup />} />
             <Route exact path="/login" element={<Login />} />
-            <Route exact path="/analytics" element={<Analytics />} />
             <Route exact path="/dashboard" element={<Dashboard />} />
             <Route exact path="/inventory" element={<Inventory />} />
             <Route path="*" element={<Navigate to="/" />} />

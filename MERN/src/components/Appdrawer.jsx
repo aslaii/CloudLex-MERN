@@ -20,6 +20,9 @@ import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
 // Custom Import from Appdrawer
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import SummarizeIcon from "@mui/icons-material/Summarize";
 import FilterDramaIcon from "@mui/icons-material/FilterDrama";
 import { useNavigate, Navigate } from "react-router-dom";
 import AccountCircle from "@mui/icons-material/AccountCircle";
@@ -205,32 +208,41 @@ export default function MiniDrawer() {
             </DrawerHeader>
             <Divider />
             <List>
-              {["Dashboard", "Analytics", "Testing"].map((text, index) => (
-                <ListItem key={text} disablePadding sx={{ display: "block" }}>
-                  <ListItemButton
-                    sx={{
-                      minHeight: 48,
-                      justifyContent: open ? "initial" : "center",
-                      px: 2.5,
-                    }}
-                    href={`/${text.toLowerCase()}`}
-                  >
-                    <ListItemIcon
+              {[
+                { text: "Dashboard", icon: <DashboardIcon /> },
+                { text: "Inventory", icon: <InventoryIcon /> },
+                { text: "Reports", icon: <SummarizeIcon /> },
+              ].map(({ text, icon }) => {
+                const lowercaseText = String(text).toLowerCase();
+                return (
+                  <ListItem key={text} disablePadding sx={{ display: "block" }}>
+                    <ListItemButton
                       sx={{
-                        minWidth: 0,
-                        mr: open ? 3 : "auto",
-                        justifyContent: "center",
+                        minHeight: 48,
+                        justifyContent: open ? "initial" : "center",
+                        px: 2.5,
                       }}
+                      href={`/${lowercaseText}`}
                     >
-                      {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={text}
-                      sx={{ opacity: open ? 1 : 0 }}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              ))}
+                      <ListItemIcon
+                        sx={{
+                          minWidth: 0,
+                          mr: open ? 3 : "auto",
+                          justifyContent: "center",
+                        }}
+                      >
+                        {icon}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={text}
+                        primaryTypographyProps={{
+                          sx: { opacity: open ? 1 : 0 },
+                        }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                );
+              })}
             </List>
             <Divider />
           </Drawer>

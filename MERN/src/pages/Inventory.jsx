@@ -43,7 +43,7 @@ const Inventory = () => {
   };
 
   return (
-    <Box sx={{ width: 1000, height: 300 }}>
+    <Box sx={{ ml: 10, width: 1000, height: 300 }}>
       <div style={{ height: 400, width: "100%" }}>
         <DataGrid
           rows={data}
