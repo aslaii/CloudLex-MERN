@@ -13,7 +13,7 @@ import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Analytics from "./pages/Analytics";
 import Dashboard from "./pages/Dashboard";
-
+import Inventory from "./pages/";
 //Components
 import Header from "./components/Header";
 import Appdrawer from "./components/Appdrawer.jsx";
@@ -46,7 +46,8 @@ function App() {
             <Route exact path="/login" element={<Login />} />
             <Route exact path="/analytics" element={<Analytics />} />
             <Route exact path="/dashboard" element={<Dashboard />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route exact path="/inventory" element={<Inventory />} />
+            <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </>
       </UserContext.Provider>
