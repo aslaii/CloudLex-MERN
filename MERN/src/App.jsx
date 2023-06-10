@@ -13,7 +13,7 @@ import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Analytics from "./pages/Analytics";
 import Dashboard from "./pages/Dashboard";
-import Inventory from "./pages/";
+import Inventory from "./pages/Inventory";
 //Components
 import Header from "./components/Header";
 import Appdrawer from "./components/Appdrawer.jsx";
