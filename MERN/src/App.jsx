@@ -11,7 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Home from "./pages/Home";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
-import Analytics from "./pages/Analytics";
+// import Analytics from "./pages/Analytics";
 import Dashboard from "./pages/Dashboard";
 import Inventory from "./pages/Inventory";
 //Components

@@ -14,7 +14,7 @@ const Inventory = () => {
 
   const columns = [
     { field: "id", headerName: "ID", width: 70 },
-    { field: "name", headerName: "Name", width: 130 },
+    { field: "name", headerName: "Name", width: 300 },
     { field: "quantity", headerName: "Quantity", width: 130 },
     { field: "price", headerName: "Price", width: 130 },
     {
