@@ -1,6 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button, TextField, Box, Stack } from "@mui/material";
+import {
+  getInventory,
+  addInventoryItem,
+  deleteInventoryItem,
+} from "../api/Inventory";
 
 const Inventory = () => {
   const [data, setData] = useState([]);
@@ -13,7 +18,7 @@ const Inventory = () => {
   const [selectedRows, setSelectedRows] = useState([]);
 
   const columns = [
-    { field: "id", headerName: "ID", width: 70 },
+    { field: "itemId", headerName: "Item ID", width: 70 },
     { field: "name", headerName: "Name", width: 300 },
     { field: "quantity", headerName: "Quantity", width: 130 },
     { field: "price", headerName: "Price", width: 130 },
@@ -29,17 +34,52 @@ const Inventory = () => {
     },
   ];
 
+  useEffect(() => {
+    getInventory().then((items) => {
+      setData(items);
+      setInputData((inputData) => ({
+        ...inputData,
+        id: generateId(items),
+      }));
+    });
+  }, []);
+
+  const generateId = (items) => {
+    let id;
+    do {
+      id = Math.floor(Math.random() * 90000) + 10000;
+    } while (items.some((item) => item.id === id));
+    return id;
+  };
   const handleInputChange = (e) => {
     setInputData({ ...inputData, [e.target.name]: e.target.value });
   };
 
   const handleAddData = () => {
-    setData([...data, inputData]);
-    setInputData({ id: "", name: "", quantity: "", price: "" });
+    // Check if the name already exists
+    if (data.some((item) => item.name === inputData.name)) {
+      alert("Name already exists!");
+      return;
+    }
+
+    const newItem = { ...inputData, itemId: inputData.id };
+    addInventoryItem(newItem).then((addedItem) => {
+      setData([...data, addedItem]);
+
+      // Generate a new unique 5-digit ID for the next item
+      const newId = generateId(data.concat(addedItem));
+
+      setInputData({ id: newId, name: "", quantity: "", price: "" });
+    });
   };
 
   const handleDelete = () => {
-    setData(data.filter((item) => !selectedRows.includes(item.id.toString())));
+    console.log("Deleting items with IDs:", selectedRows);
+    selectedRows.forEach((id) => {
+      deleteInventoryItem(id).then(() => {
+        setData(data.filter((item) => item.id !== id));
+      });
+    });
   };
 
   return (
@@ -48,10 +88,10 @@ const Inventory = () => {
         <DataGrid
           rows={data}
           columns={columns}
-          pageSize={5}
           checkboxSelection
-          onSelectionModelChange={(newSelection) => {
-            setSelectedRows(newSelection.selectionModel);
+          onRowSelectionModelChange={(newSelection) => {
+            console.log("Selection changed:", newSelection);
+            setSelectedRows(newSelection);
           }}
         />
         <Stack
@@ -62,12 +102,12 @@ const Inventory = () => {
           sx={{ mt: 1 }}
         >
           <TextField
+            disabled
             sx={{ width: 100 }}
             name="id"
-            label="ID"
+            label="Item ID"
             variant="outlined"
             value={inputData.id}
-            onChange={handleInputChange}
           />
           <TextField
             name="name"
