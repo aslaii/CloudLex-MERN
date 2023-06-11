@@ -30,7 +30,9 @@ app.use(cookieParser());
 // routes
 const userRoutes = require("./routes/user");
 app.use("/", userRoutes);
-
+//Inventory Routes
+const inventoryRoutes = require("./routes/inventory");
+app.use("/", inventoryRoutes);
 // port
 const port = process.env.PORT || 8080;
 
