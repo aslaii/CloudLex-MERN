@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { Button, TextField, Box, Stack } from "@mui/material";
+import { Box, Button, Stack, TextField } from "@mui/material";
 import {
-  getInventory,
   addInventoryItem,
   deleteInventoryItem,
+  getInventory,
 } from "../api/Inventory";
 
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const Inventory = () => {
   const [data, setData] = useState([]);
   const [inputData, setInputData] = useState({
@@ -67,8 +69,21 @@ const Inventory = () => {
         const newId = generateId(data.concat(itemForGrid));
 
         setInputData({ id: newId, name: "", quantity: "", price: "" });
+
+        // Notify success
+        toast.success("Data added successfully!");
       } else {
-        console.log("Invalid item received:", addedItem);
+        // Check for common errors
+        if (addedItem.error.includes("duplicate key error")) {
+          if (addedItem.error.includes("name")) {
+            toast.error("Name already exists!");
+          }
+          if (addedItem.error.includes("itemId")) {
+            toast.error("ItemID already exists!");
+          }
+        } else {
+          console.log("Invalid item received:", addedItem);
+        }
       }
     });
   };
@@ -78,6 +93,9 @@ const Inventory = () => {
     selectedRows.forEach((id) => {
       deleteInventoryItem(id).then(() => {
         setData(data.filter((item) => item.id !== id));
+
+        // Notify success
+        toast.success("Data deleted successfully!");
       });
     });
   };
@@ -139,6 +157,7 @@ const Inventory = () => {
           </Button>
         </Stack>
       </div>
+      <ToastContainer />
     </Box>
   );
 };
