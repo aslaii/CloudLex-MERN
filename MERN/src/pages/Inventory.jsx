@@ -56,20 +56,20 @@ const Inventory = () => {
   };
 
   const handleAddData = () => {
-    // Check if the name already exists
-    if (data.some((item) => item.name === inputData.name)) {
-      alert("Name already exists!");
-      return;
-    }
-
     const newItem = { ...inputData, itemId: inputData.id };
     addInventoryItem(newItem).then((addedItem) => {
-      setData([...data, addedItem]);
+      // Ensure the response contains itemId and it's not null
+      if (addedItem.itemId) {
+        const itemForGrid = { ...addedItem, id: addedItem.itemId };
+        setData([...data, itemForGrid]);
 
-      // Generate a new unique 5-digit ID for the next item
-      const newId = generateId(data.concat(addedItem));
+        // Generate a new unique 5-digit ID for the next item
+        const newId = generateId(data.concat(itemForGrid));
 
-      setInputData({ id: newId, name: "", quantity: "", price: "" });
+        setInputData({ id: newId, name: "", quantity: "", price: "" });
+      } else {
+        console.log("Invalid item received:", addedItem);
+      }
     });
   };
 

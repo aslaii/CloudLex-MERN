@@ -10,8 +10,12 @@ exports.getInventory = async (req, res) => {
 };
 
 exports.addInventoryItem = async (req, res) => {
+  const { itemId, name, quantity, price } = req.body;
+  if (!itemId) {
+    return res.status(400).json({ error: "Item ID is required" });
+  }
   try {
-    const newInventoryItem = new Inventory(req.body);
+    const newInventoryItem = new Inventory({ itemId, name, quantity, price });
     const savedInventoryItem = await newInventoryItem.save();
     res.json(savedInventoryItem);
   } catch (err) {
