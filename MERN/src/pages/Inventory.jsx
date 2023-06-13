@@ -18,7 +18,7 @@ const Inventory = () => {
     price: "",
   });
   const [selectedRows, setSelectedRows] = useState([]);
-
+  const [isError, setIsError] = useState(false);
   const columns = [
     { field: "itemId", headerName: "Item ID", width: 70 },
     { field: "name", headerName: "Name", width: 300 },
@@ -28,47 +28,36 @@ const Inventory = () => {
       field: "actions",
       headerName: "Actions",
       width: 150,
-      renderCell: (params) => (
+      renderCell: () => (
         <Button variant="contained" color="primary">
           Edit
         </Button>
       ),
     },
   ];
-
-  useEffect(() => {
-    getInventory().then((items) => {
-      setData(items);
-      setInputData((inputData) => ({
-        ...inputData,
-        id: generateId(items),
-      }));
-    });
-  }, []);
-
-  const generateId = (items) => {
-    let id;
-    do {
-      id = Math.floor(Math.random() * 90000) + 10000;
-    } while (items.some((item) => item.id === id));
-    return id;
-  };
   const handleInputChange = (e) => {
     setInputData({ ...inputData, [e.target.name]: e.target.value });
+    if (e.target.name === "quantity" || e.target.name === "price") {
+      if (isNaN(e.target.value)) {
+        setIsError(true);
+      } else {
+        setIsError(false);
+      }
+    }
   };
 
   const handleAddData = () => {
-    const newItem = { ...inputData, itemId: inputData.id };
+    const newItem = {
+      name: inputData.name,
+      quantity: Number(inputData.quantity),
+      price: Number(inputData.price),
+    };
     addInventoryItem(newItem).then((addedItem) => {
-      // Ensure the response contains itemId and it's not null
-      if (addedItem.itemId) {
-        const itemForGrid = { ...addedItem, id: addedItem.itemId };
+      if (addedItem && addedItem.itemId) {
+        const itemForGrid = { ...addedItem, id: addedItem._id };
         setData([...data, itemForGrid]);
 
-        // Generate a new unique 5-digit ID for the next item
-        const newId = generateId(data.concat(itemForGrid));
-
-        setInputData({ id: newId, name: "", quantity: "", price: "" });
+        setInputData({ name: "", quantity: "", price: "" });
 
         // Notify success
         toast.success("Data added successfully!");
@@ -78,9 +67,6 @@ const Inventory = () => {
           if (addedItem.error.includes("name")) {
             toast.error("Name already exists!");
           }
-          if (addedItem.error.includes("itemId")) {
-            toast.error("ItemID already exists!");
-          }
         } else {
           console.log("Invalid item received:", addedItem);
         }
@@ -88,16 +74,23 @@ const Inventory = () => {
     });
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     console.log("Deleting items with IDs:", selectedRows);
-    selectedRows.forEach((id) => {
-      deleteInventoryItem(id).then(() => {
-        setData(data.filter((item) => item.id !== id));
 
-        // Notify success
-        toast.success("Data deleted successfully!");
-      });
-    });
+    const deletePromises = selectedRows.map((id) => deleteInventoryItem(id));
+
+    try {
+      await Promise.all(deletePromises);
+
+      setData((prevData) =>
+        prevData.filter((item) => !selectedRows.includes(item.id))
+      );
+
+      // Notify success
+      toast.success("Data deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting items:", error);
+    }
   };
 
   return (
@@ -119,14 +112,14 @@ const Inventory = () => {
           flexWrap="wrap"
           sx={{ mt: 1 }}
         >
-          <TextField
-            disabled
-            sx={{ width: 100 }}
-            name="id"
-            label="Item ID"
-            variant="outlined"
-            value={inputData.id}
-          />
+          {/* <TextField */}
+          {/*   disabled */}
+          {/*   sx={{ width: 100 }} */}
+          {/*   name="id" */}
+          {/*   label="Item ID" */}
+          {/*   variant="outlined" */}
+          {/*   value={inputData.id} */}
+          {/* /> */}
           <TextField
             name="name"
             label="Name"
@@ -135,6 +128,7 @@ const Inventory = () => {
             onChange={handleInputChange}
           />
           <TextField
+            error={isError}
             sx={{ width: 100 }}
             name="quantity"
             label="Quantity"
@@ -143,13 +137,19 @@ const Inventory = () => {
             onChange={handleInputChange}
           />
           <TextField
+            error={isError}
             name="price"
             label="Price"
             variant="outlined"
             value={inputData.price}
             onChange={handleInputChange}
           />
-          <Button variant="contained" color="primary" onClick={handleAddData}>
+          <Button
+            variant="contained"
+            disabled={isError}
+            color="primary"
+            onClick={handleAddData}
+          >
             Add Data
           </Button>
           <Button variant="contained" color="secondary" onClick={handleDelete}>

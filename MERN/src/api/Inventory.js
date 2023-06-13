@@ -14,22 +14,26 @@ export const getInventory = async () => {
     throw new Error("Cannot get inventory at this time. " + err);
   }
 };
+// ...
+
 export const addInventoryItem = async (item) => {
   try {
-    const res = await fetch(`${baseURL}inventory`, {
+    const response = await fetch(`${baseURL}inventory`, {
       method: "POST",
-      credentials: "include",
       headers: {
-        Accept: "application/json",
         "Content-Type": "application/json",
       },
       body: JSON.stringify(item),
+      credentials: "include",
     });
-    return await res.json();
-  } catch (err) {
-    throw new Error("Cannot add inventory item at this time. " + err);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error adding inventory item:", error);
+    throw error;
   }
 };
+// ...
 
 export const deleteInventoryItem = async (id) => {
   try {
