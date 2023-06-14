@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { Box, Button, Stack, TextField } from "@mui/material";
+import { Box, Button, MenuItem, Select, Stack, TextField } from "@mui/material";
 import {
   addInventoryItem,
   deleteInventoryItem,
   getInventory,
 } from "../api/Inventory";
-
+import { getCategories } from "../api/Category.js";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 const Inventory = () => {
@@ -16,11 +16,22 @@ const Inventory = () => {
     name: "",
     quantity: "",
     price: "",
+    category: "",
   });
   const [selectedRows, setSelectedRows] = useState([]);
   const [isError, setIsError] = useState(false);
+  const [categories, setcategories] = useState([]);
   const columns = [
     { field: "itemId", headerName: "Item ID", width: 70 },
+    {
+      field: "category",
+      headerName: "Category",
+      width: 175,
+      valueGetter: (params) =>
+        params.value && typeof params.value === "object"
+          ? params.value.name
+          : params.value,
+    },
     { field: "name", headerName: "Name", width: 300 },
     { field: "quantity", headerName: "Quantity", width: 130 },
     { field: "price", headerName: "Price", width: 130 },
@@ -45,33 +56,65 @@ const Inventory = () => {
       }
     }
   };
+  useEffect(() => {
+    getInventory().then((items) => setData(items));
 
+    getCategories()
+      .then((categories) => {
+        setcategories(categories);
+        if (categories.length > 0) {
+          setInputData((prevData) => ({
+            ...prevData,
+            category: categories[0]._id,
+          }));
+        }
+      })
+      .catch((err) => console.error(err));
+  }, []);
+
+  const handleCategoryChange = (e) => {
+    setInputData({ ...inputData, category: e.target.value });
+  };
   const handleAddData = () => {
     const newItem = {
       name: inputData.name,
       quantity: Number(inputData.quantity),
       price: Number(inputData.price),
+      category: inputData.category,
     };
-    addInventoryItem(newItem).then((addedItem) => {
-      if (addedItem && addedItem.itemId) {
-        const itemForGrid = { ...addedItem, id: addedItem._id };
-        setData([...data, itemForGrid]);
+    addInventoryItem(newItem)
+      .then((addedItem) => {
+        if (addedItem && addedItem.itemId) {
+          const categoryObject = categories.find(
+            (cat) => cat._id === addedItem.category
+          );
+          const itemForGrid = {
+            ...addedItem,
+            id: addedItem._id,
+            category: categoryObject,
+          };
+          setData([...data, itemForGrid]);
 
-        setInputData({ name: "", quantity: "", price: "" });
+          setInputData({ name: "", quantity: "", price: "" });
 
-        // Notify success
-        toast.success("Data added successfully!");
-      } else {
-        // Check for common errors
-        if (addedItem.error.includes("duplicate key error")) {
-          if (addedItem.error.includes("name")) {
-            toast.error("Name already exists!");
-          }
+          // Notify success
+          toast.success("Data added successfully!");
         } else {
           console.log("Invalid item received:", addedItem);
         }
-      }
-    });
+      })
+      .catch((error) => {
+        if (
+          error.response &&
+          error.response.data.message.includes("duplicate key error")
+        ) {
+          if (error.response.data.message.includes("name")) {
+            toast.error("Name already exists!");
+          }
+        } else {
+          console.log("Error adding item:", error);
+        }
+      });
   };
 
   const handleDelete = async () => {
@@ -120,6 +163,18 @@ const Inventory = () => {
           {/*   variant="outlined" */}
           {/*   value={inputData.id} */}
           {/* /> */}
+          <Select
+            value={inputData.category}
+            onChange={handleCategoryChange}
+            name="Category"
+            sx={{ width: 175 }}
+          >
+            {categories.map((category) => (
+              <MenuItem key={category._id} value={category._id}>
+                {category.name}
+              </MenuItem>
+            ))}
+          </Select>
           <TextField
             name="name"
             label="Name"

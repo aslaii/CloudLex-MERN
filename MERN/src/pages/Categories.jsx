@@ -40,17 +40,28 @@ const Categories = () => {
 
   const handleAddCategory = () => {
     const newCategory = { ...inputData };
-    addCategory(newCategory).then((addedCategory) => {
-      if (addedCategory.name) {
-        setData([...data, addedCategory]);
+    addCategory(newCategory)
+      .then((addedCategory) => {
+        if (addedCategory.name) {
+          setData([...data, addedCategory]);
 
-        setInputData({ name: "" });
+          setInputData({ name: "" });
 
-        toast.success("Category added successfully!");
-      } else {
-        console.log("Invalid category received:", addedCategory);
-      }
-    });
+          toast.success("Category added successfully!");
+        } else {
+          console.log("Invalid category received:", addedCategory);
+        }
+      })
+      .catch((error) => {
+        if (
+          error.response &&
+          error.response.data.message.includes("duplicate key error")
+        ) {
+          toast.error("Category name already exist.");
+        } else {
+          console.log("Error adding category:", error);
+        }
+      });
   };
 
   const handleDelete = async () => {

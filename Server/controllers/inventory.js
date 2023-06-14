@@ -1,17 +1,20 @@
 const Inventory = require("../models/inventory");
 const IdCounter = require("../models/idCounter");
 
-exports.getInventory = async (req, res) => {
+exports.getInventoryItems = async (req, res) => {
   try {
-    const inventory = await Inventory.find();
-    res.json(inventory);
+    const inventoryItems = await Inventory.find().populate(
+      "category",
+      "name -_id",
+    ); // Only get 'name' field from Category
+    res.json(inventoryItems);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
 exports.addInventoryItem = async (req, res) => {
-  const { name, quantity, price } = req.body;
+  const { name, quantity, price, category } = req.body;
   try {
     const idCounter = await IdCounter.findOneAndUpdate(
       {},
@@ -23,6 +26,7 @@ exports.addInventoryItem = async (req, res) => {
       name,
       quantity,
       price,
+      category,
     });
     const savedInventoryItem = await newInventoryItem.save();
     res.json(savedInventoryItem);
