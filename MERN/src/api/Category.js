@@ -27,6 +27,7 @@ export const addCategory = async (category) => {
     return res.data;
   } catch (err) {
     console.error("Error adding category:", err);
+    throw err;
   }
 };
 
