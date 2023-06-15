@@ -1,6 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { DataGrid } from "@mui/x-data-grid";
-import { Box, Button, MenuItem, Select, Stack, TextField } from "@mui/material";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { MaterialReactTable } from "material-react-table";
+import {
+  Box,
+  Button,
+  IconButton,
+  MenuItem,
+  Stack,
+  TextField,
+  Tooltip,
+} from "@mui/material";
+import { Delete, Edit } from "@mui/icons-material";
 import {
   addInventoryItem,
   deleteInventoryItem,
@@ -9,6 +18,7 @@ import {
 import { getCategories } from "../api/Category.js";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
 const Inventory = () => {
   const [data, setData] = useState([]);
   const [inputData, setInputData] = useState({
@@ -21,44 +31,12 @@ const Inventory = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [isError, setIsError] = useState(false);
   const [categories, setcategories] = useState([]);
-  const columns = [
-    { field: "itemId", headerName: "Item ID", width: 70 },
-    {
-      field: "category",
-      headerName: "Category",
-      width: 175,
-      valueGetter: (params) =>
-        params.value && typeof params.value === "object"
-          ? params.value.name
-          : params.value,
-    },
-    { field: "name", headerName: "Name", width: 300 },
-    { field: "quantity", headerName: "Quantity", width: 130 },
-    { field: "price", headerName: "Price", width: 130 },
-    {
-      field: "actions",
-      headerName: "Actions",
-      width: 150,
-      renderCell: () => (
-        <Button variant="contained" color="primary">
-          Edit
-        </Button>
-      ),
-    },
-  ];
-  const handleInputChange = (e) => {
-    setInputData({ ...inputData, [e.target.name]: e.target.value });
-    if (e.target.name === "quantity" || e.target.name === "price") {
-      if (isNaN(e.target.value)) {
-        setIsError(true);
-      } else {
-        setIsError(false);
-      }
-    }
-  };
-  useEffect(() => {
-    getInventory().then((items) => setData(items));
 
+  useEffect(() => {
+    getInventory().then((items) => {
+      setData(items);
+      console.log(items);
+    });
     getCategories()
       .then((categories) => {
         setcategories(categories);
@@ -72,9 +50,21 @@ const Inventory = () => {
       .catch((err) => console.error(err));
   }, []);
 
+  const handleInputChange = (e) => {
+    setInputData({ ...inputData, [e.target.name]: e.target.value });
+    if (e.target.name === "quantity" || e.target.name === "price") {
+      if (isNaN(e.target.value)) {
+        setIsError(true);
+      } else {
+        setIsError(false);
+      }
+    }
+  };
+
   const handleCategoryChange = (e) => {
     setInputData({ ...inputData, category: e.target.value });
   };
+
   const handleAddData = () => {
     const newItem = {
       name: inputData.name,
@@ -86,7 +76,7 @@ const Inventory = () => {
       .then((addedItem) => {
         if (addedItem && addedItem.itemId) {
           const categoryObject = categories.find(
-            (cat) => cat._id === addedItem.category
+            (cat) => cat._id === addedItem.category,
           );
           const itemForGrid = {
             ...addedItem,
@@ -97,7 +87,6 @@ const Inventory = () => {
 
           setInputData({ name: "", quantity: "", price: "" });
 
-          // Notify success
           toast.success("Data added successfully!");
         } else {
           console.log("Invalid item received:", addedItem);
@@ -117,102 +106,100 @@ const Inventory = () => {
       });
   };
 
-  const handleDelete = async () => {
-    console.log("Deleting items with IDs:", selectedRows);
+  const handleDelete = useCallback((row) => {
+    deleteInventoryItem(row.id)
+      .then(() => {
+        setData((prevData) => prevData.filter((item) => item.id !== row.id));
 
-    const deletePromises = selectedRows.map((id) => deleteInventoryItem(id));
+        toast.success("Data deleted successfully!");
+      })
+      .catch((error) => {
+        console.log("Error deleting item:", error);
+        toast.error("Failed to delete data!");
+      });
+  }, []);
 
-    try {
-      await Promise.all(deletePromises);
-
-      setData((prevData) =>
-        prevData.filter((item) => !selectedRows.includes(item.id))
-      );
-
-      // Notify success
-      toast.success("Data deleted successfully!");
-    } catch (error) {
-      console.error("Error deleting items:", error);
-    }
-  };
-
+  const columns = [
+    {
+      header: "Item ID",
+      accessorKey: "itemId",
+      size: 40,
+    },
+    {
+      header: "Category",
+      accessorKey: "category.name",
+      size: 100,
+    },
+    {
+      header: "Name",
+      accessorKey: "name",
+      size: 140,
+    },
+    {
+      header: "Quantity",
+      accessorKey: "quantity",
+      size: 140,
+    },
+    {
+      header: "Price",
+      accessorKey: "price",
+      size: 140,
+    },
+  ];
   return (
-    <Box sx={{ ml: 10, width: 1000, height: 300 }}>
-      <div style={{ height: 400, width: "100%" }}>
-        <DataGrid
-          rows={data}
-          columns={columns}
-          checkboxSelection
-          onRowSelectionModelChange={(newSelection) => {
-            console.log("Selection changed:", newSelection);
-            setSelectedRows(newSelection);
-          }}
-        />
-        <Stack
-          spacing={{ sm: 2 }}
-          direction="row"
-          useFlexGap
-          flexWrap="wrap"
-          sx={{ mt: 1 }}
-        >
-          {/* <TextField */}
-          {/*   disabled */}
-          {/*   sx={{ width: 100 }} */}
-          {/*   name="id" */}
-          {/*   label="Item ID" */}
-          {/*   variant="outlined" */}
-          {/*   value={inputData.id} */}
-          {/* /> */}
-          <Select
-            value={inputData.category}
-            onChange={handleCategoryChange}
-            name="Category"
-            sx={{ width: 175 }}
-          >
-            {categories.map((category) => (
-              <MenuItem key={category._id} value={category._id}>
-                {category.name}
-              </MenuItem>
-            ))}
-          </Select>
-          <TextField
-            name="name"
-            label="Name"
-            variant="outlined"
-            value={inputData.name}
-            onChange={handleInputChange}
-          />
-          <TextField
-            error={isError}
-            sx={{ width: 100 }}
-            name="quantity"
-            label="Quantity"
-            variant="outlined"
-            value={inputData.quantity}
-            onChange={handleInputChange}
-          />
-          <TextField
-            error={isError}
-            name="price"
-            label="Price"
-            variant="outlined"
-            value={inputData.price}
-            onChange={handleInputChange}
-          />
-          <Button
-            variant="contained"
-            disabled={isError}
-            color="primary"
-            onClick={handleAddData}
-          >
-            Add Data
-          </Button>
-          <Button variant="contained" color="secondary" onClick={handleDelete}>
-            Delete
-          </Button>
-        </Stack>
-      </div>
+    <Box sx={{ ml: 10, height: 500, width: "80%" }}>
+      <MaterialReactTable columns={columns} data={data} />
       <ToastContainer />
+      <Stack direction="row" spacing={2} sx={{ mt: 5 }}>
+        {" "}
+        <TextField
+          select
+          name="category"
+          value={inputData.category}
+          onChange={handleCategoryChange}
+          label="Category"
+          variant="outlined"
+          width={100}
+          defaultValue={"Select Category"}
+        >
+          {categories.map((option) => (
+            <MenuItem key={option._id} value={option._id}>
+              {option.name}
+            </MenuItem>
+          ))}
+        </TextField>
+        <TextField
+          name="name"
+          value={inputData.name}
+          onChange={handleInputChange}
+          label="Name"
+          variant="outlined"
+        />
+        <TextField
+          name="quantity"
+          value={inputData.quantity}
+          onChange={handleInputChange}
+          label="Quantity"
+          variant="outlined"
+          error={isError}
+        />
+        <TextField
+          name="price"
+          value={inputData.price}
+          onChange={handleInputChange}
+          label="Price"
+          variant="outlined"
+          error={isError}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleAddData}
+          disabled={isError}
+        >
+          Add
+        </Button>
+      </Stack>
     </Box>
   );
 };
