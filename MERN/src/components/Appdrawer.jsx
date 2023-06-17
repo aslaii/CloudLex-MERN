@@ -20,8 +20,11 @@ import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
 // Custom Import from Appdrawer
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import SummarizeIcon from "@mui/icons-material/Summarize";
 import FilterDramaIcon from "@mui/icons-material/FilterDrama";
-import { useNavigate, Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import { UserContext } from "../UserContext";
 import { logout } from "../api/user";
@@ -133,26 +136,28 @@ export default function MiniDrawer() {
       <CssBaseline />
       <AppBar position="fixed" open={open} color="primary">
         <Toolbar>
-          {user ? (
-            <div>
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                onClick={handleDrawerOpen}
-                edge="start"
-                sx={{
-                  marginRight: 5,
-                  ...(open && { display: "none" }),
-                }}
-              >
-                <MenuIcon />
-              </IconButton>
-            </div>
-          ) : (
-            <div>
-              <FilterDramaIcon sx={{ mr: 5 }} />
-            </div>
-          )}
+          {user
+            ? (
+              <div>
+                <IconButton
+                  color="inherit"
+                  aria-label="open drawer"
+                  onClick={handleDrawerOpen}
+                  edge="start"
+                  sx={{
+                    marginRight: 5,
+                    ...(open && { display: "none" }),
+                  }}
+                >
+                  <MenuIcon />
+                </IconButton>
+              </div>
+            )
+            : (
+              <div>
+                <FilterDramaIcon sx={{ mr: 5 }} />
+              </div>
+            )}
 
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             CloudLex
@@ -196,41 +201,48 @@ export default function MiniDrawer() {
           <Drawer variant="permanent" open={open}>
             <DrawerHeader>
               <IconButton onClick={handleDrawerClose}>
-                {theme.direction === "rtl" ? (
-                  <ChevronRightIcon />
-                ) : (
-                  <ChevronLeftIcon />
-                )}
+                {theme.direction === "rtl"
+                  ? <ChevronRightIcon />
+                  : <ChevronLeftIcon />}
               </IconButton>
             </DrawerHeader>
             <Divider />
             <List>
-              {["Dashboard", "Analytics", "Testing"].map((text, index) => (
-                <ListItem key={text} disablePadding sx={{ display: "block" }}>
-                  <ListItemButton
-                    sx={{
-                      minHeight: 48,
-                      justifyContent: open ? "initial" : "center",
-                      px: 2.5,
-                    }}
-                    href={`/${text.toLowerCase()}`}
-                  >
-                    <ListItemIcon
+              {[
+                { text: "Dashboard", icon: <DashboardIcon /> },
+                { text: "Inventory", icon: <InventoryIcon /> },
+                { text: "Categories", icon: <SummarizeIcon /> },
+              ].map(({ text, icon }) => {
+                const lowercaseText = String(text).toLowerCase();
+                return (
+                  <ListItem key={text} disablePadding sx={{ display: "block" }}>
+                    <ListItemButton
                       sx={{
-                        minWidth: 0,
-                        mr: open ? 3 : "auto",
-                        justifyContent: "center",
+                        minHeight: 48,
+                        justifyContent: open ? "initial" : "center",
+                        px: 2.5,
                       }}
+                      href={`/${lowercaseText}`}
                     >
-                      {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={text}
-                      sx={{ opacity: open ? 1 : 0 }}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              ))}
+                      <ListItemIcon
+                        sx={{
+                          minWidth: 0,
+                          mr: open ? 3 : "auto",
+                          justifyContent: "center",
+                        }}
+                      >
+                        {icon}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={text}
+                        primaryTypographyProps={{
+                          sx: { opacity: open ? 1 : 0 },
+                        }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                );
+              })}
             </List>
             <Divider />
           </Drawer>

@@ -62,7 +62,7 @@ const Login = () => {
         navigate("/");
         window.location.reload(false);
         <Navigate to={"/"} />;
-      }, 2000); // 2000 ms delay
+      }, 100); // 2000 ms delay
     }
   };
 

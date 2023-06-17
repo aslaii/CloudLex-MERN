@@ -10,7 +10,6 @@ import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import { UserContext } from "../UserContext";
 import { Navigate } from "react-router-dom";
-import { Drawer } from "@mui/material";
 
 const Sidebar = () => {
   const { user } = useContext(UserContext);
